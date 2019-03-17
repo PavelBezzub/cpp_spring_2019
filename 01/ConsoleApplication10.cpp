@@ -1,3 +1,4 @@
+﻿#include "pch.h"
 #include <iostream>
 #include <fstream> 
 #include <string.h>
@@ -5,7 +6,7 @@
 #include <math.h>
 #include "numbers.dat"
 using namespace std;
-int bynarysearch(const int k) {
+int binarysearch(const int k) {
 	int left = 0, right = Size - 1, middle;
 	while (left <= right) {
 		middle = (left + right) / 2;
@@ -18,40 +19,50 @@ int bynarysearch(const int k) {
 	}
 	return 0;
 }
+int simple_check(int a)
+{
+	float end;
+	end = sqrt((float)a);
+	for (int i = 2; i <= end; ++i) {
+		if (a % i == 0)  return 1;
+	}
+	return 0;
 
+}
 int search_for_simple_numbers(const int a, const int b)
 {
-	int aa = bynarysearch(a);
-	int bb = bynarysearch(b);
-	for (int u = bb; u < Size; u++)
+	int left = binarysearch(a);
+	int right = binarysearch(b);
+	
+	for (int u = right; u < Size; u++)
 	{
 		if (Data[u] == Data[u + 1])
 		{
-			bb = bb + 1;
+			right = right + 1;
 		}
 		else break;
 	}
+	cout << left << ' ' << right;
 	int n = 0;
-	float end;
-	for (int j = aa; j <= bb; j++)
+	for (int j = left; j <= right; j++)
 	{
-		end = sqrt((float)Data[j]);
 		if (Data[j] == 1)
 		{
 			++n;
 		}
-		for (int i = 2; i <= end; ++i) {
-			if (Data[j] % i == 0) {
+		else {
+			   if (simple_check(Data[j]) == 1)
+			   {
 				++n;
-				break;
-			}
+			   }
 		}
 	}
-	return bb - aa + 1 - n;
+	return right - left + 1 - n;
 }
 
 int main(int argc, char* argv[])
 {
+
 	if (argc < 3) return -1;
 	if ((argc + 1) % 2) return -1;
 	int n = (argc - 1) / 2;
