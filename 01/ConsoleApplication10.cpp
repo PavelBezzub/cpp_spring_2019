@@ -41,7 +41,6 @@ int search_for_simple_numbers(const int a, const int b)
 		}
 		else break;
 	}
-	cout << left << ' ' << right;
 	int n = 0;
 	for (int j = left; j <= right; j++)
 	{
