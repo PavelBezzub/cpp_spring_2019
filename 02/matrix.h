@@ -119,12 +119,5 @@ const bool Matrix::operator==(const Matrix& other) {
 	return true;
 }
 const bool Matrix::operator!=(const Matrix& other) {
-	if ((columns != other.columns) || (row != other.row)) return true;
-	for (int i = 0; i < row; i++) {
-		for (int j = 0; j < columns; j++)
-		{
-			if (M_matrix[i][j] != other.M_matrix[i][j]) return true;
-		}
-	}
-	return false;
+	return !(*this==other);
 }
