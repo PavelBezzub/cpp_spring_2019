@@ -6,27 +6,27 @@ class Matrix
 	public:
 		proxy() :arr(NULL), size(0) {}
 		~proxy() { delete[](arr); }
-		proxy(int columns)
+		proxy(size_t columns)
 		{ 
 			arr = new int[columns];
 			size = columns;
 		}
-		const int& operator[](int index) const;
-		int& operator[](int index);
+		const int& operator[](size_t index) const;
+		int& operator[](size_t index);
 	private:
 		size_t size;
 		int *arr;
 	};
 public:
-	Matrix(int  row, int columns);
+	Matrix(size_t  row, size_t columns);
 	~Matrix();
-	Matrix  &operator*=(int x);
+	Matrix  &operator*=(size_t x);
 	bool operator==(const Matrix& other);
 	bool operator!=(const Matrix& other);
-	const proxy& operator[](int index) const;
-	proxy& operator[](int index);
-	int getRows();
-	int getColumns();
+	const proxy& operator[](size_t index) const;
+	proxy& operator[](size_t index);
+	const size_t getRows();
+	const size_t getColumns();
 
 private:
 	proxy *M_matrix;
@@ -34,54 +34,54 @@ private:
 	size_t columns;
 };
 
-const int& Matrix::proxy::operator[](int index) const
+const int& Matrix::proxy::operator[](size_t index) const
 {
 	if (index >= size) throw std::out_of_range("");
 	return arr[index];
 }
-int& Matrix::proxy::operator[](int index)
+int& Matrix::proxy::operator[](size_t index)
 {
 	if (index >= size) throw std::out_of_range("");
 	return arr[index];
 }
 
-const Matrix::proxy& Matrix::operator[](int index) const {
+const Matrix::proxy& Matrix::operator[](size_t index) const {
 	if (index >= row) throw std::out_of_range("");
 	return M_matrix[index];
 }
-Matrix::proxy& Matrix::operator[](int index) {
+Matrix::proxy& Matrix::operator[](size_t index) {
 	if (index >= row) throw std::out_of_range("");
 	return M_matrix[index];
 }
 
-Matrix::Matrix(int rows, int column) : row(rows), columns(column)
+Matrix::Matrix(size_t rows, size_t column) : row(rows), columns(column)
 {
 	M_matrix = static_cast<proxy*>(operator new[](row * sizeof(proxy)));
-	for (int i = 0; i < row; i++)
+	for (size_t i = 0; i < row; i++)
 	{
 		new(M_matrix + i) proxy(columns);
 	}
 }
 Matrix::~Matrix()
 {   
-	for (int i = 0; i < row; i++)
+	for (size_t i = 0; i < row; i++)
 	{
 		M_matrix[i].~proxy();
 	}
 	operator delete[](M_matrix);
 }
 
-int Matrix::getRows() {
+const size_t Matrix::getRows() {
 	return row;
 }
 
-int Matrix::getColumns() {
+const size_t Matrix::getColumns() {
 	return columns;
 }
 
-Matrix  &Matrix::operator*=(int x) {
-	for (int i = 0; i < row; i++)
-		for (int j = 0; j < columns; j++)
+Matrix  &Matrix::operator*=(size_t x) {
+	for (size_t i = 0; i < row; i++)
+		for (size_t j = 0; j < columns; j++)
 		{
 			M_matrix[i][j] = M_matrix[i][j] * x;
 		}
@@ -90,8 +90,8 @@ Matrix  &Matrix::operator*=(int x) {
 
 bool Matrix::operator==(const Matrix& other) {
 	if ((columns != other.columns) || (row != other.row)) return false;
-	for (int i = 0; i < row; i++) {
-		for (int j = 0; j < columns; j++)
+	for (size_t i = 0; i < row; i++) {
+		for (size_t j = 0; j < columns; j++)
 		{
 			if (M_matrix[i][j] != other.M_matrix[i][j]) return false;
 		}
