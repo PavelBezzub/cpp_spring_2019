@@ -79,7 +79,7 @@ const size_t Matrix::getColumns() {
 	return columns;
 }
 
-Matrix  &Matrix::operator*=(size_t x) {
+Matrix  &Matrix::operator*=(int x) {
 	for (size_t i = 0; i < row; i++)
 		for (size_t j = 0; j < columns; j++)
 		{
