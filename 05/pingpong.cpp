@@ -73,7 +73,7 @@ void foo() {
 
 
 
-int main(int argc, char const *argv[]) {
+int main() {
 	std::thread T1(bar);
 	std::thread T2(foo);
 	T1.join();
