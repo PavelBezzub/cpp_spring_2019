@@ -1,82 +1,38 @@
+//long running code (13 seconds)
+#include "pch.h"
 #include <iostream>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 
 std::mutex m;
-std::mutex mtx1;
-std::mutex mtx2;
+std::condition_variable ping_done;
+std::condition_variable pong_done;
 
 void bar() {
 	std::unique_lock <std::mutex> lock(m);
-	std::unique_lock <std::mutex> lock_mtx2(mtx2);
-	std::unique_lock <std::mutex> lock_mtx1(mtx1, std::defer_lock);
-	bool cs = true;
-	bool tr = false;
-	printf("ping\n");
-	lock.unlock();
-	for (size_t i = 1; i < 500000; ++i) {
-		while (!lock.try_lock()) {}
-		tr = lock_mtx1.try_lock();
-		if (tr == cs) {
-			if (tr) {
-				lock_mtx1.unlock();
-			}
-			--i;
-			lock.unlock();
-			std::this_thread::yield();
-			continue;
-		}
-		else if (tr) {
-			lock_mtx1.unlock();
-			lock_mtx2.lock();
-		}
-		else {
-			lock_mtx2.unlock();
-		}
-		cs = tr;
-		printf("ping\n");
-		lock.unlock();
+	for (size_t i = 0; i < 500000; ++i) {
+		ping_done.wait(lock);
+		printf("pong\n");
+		pong_done.notify_one();
 	}
 }
 
 void foo() {
-	std::unique_lock <std::mutex> lock_mtx1(mtx1, std::defer_lock);
-	std::unique_lock <std::mutex> lock_mtx2(mtx2, std::defer_lock);
-	std::unique_lock <std::mutex> lock(m, std::defer_lock);
-	bool sn = true;
-	bool tr = false;
+	std::unique_lock <std::mutex> lock(m);
 	for (size_t i = 0; i < 500000; ++i) {
-		while (!lock.try_lock()) {}
-		tr = lock_mtx2.try_lock();
-		if (tr == sn) {
-			if (tr) {
-				lock_mtx2.unlock();
-			}
-			--i;
-			lock.unlock();
-			std::this_thread::yield();
-			continue;
-		}
-		else if (tr) {
-			lock_mtx2.unlock();
-			lock_mtx1.unlock();
-		}
-		else {
-			lock_mtx1.lock();
-		}
-		sn = tr;
-		printf("pong\n");
-		lock.unlock();
+		printf("ping\n");
+		ping_done.notify_one();
+		pong_done.wait(lock);
 	}
 }
 
 
 
-int main() {
+int main(int argc, char const *argv[]) {
 	std::thread T1(bar);
+	T1.detach();
 	std::thread T2(foo);
-	T1.join();
 	T2.join();
 	return 0;
 }
