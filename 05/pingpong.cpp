@@ -7,10 +7,10 @@
 std::mutex m;
 std::condition_variable ping_done;
 std::condition_variable pong_done;
-
+const size_t n = 500000;
 void bar() {
 	std::unique_lock <std::mutex> lock(m);
-	for (size_t i = 0; i < 500000; ++i) {
+	for (size_t i = 0; i < n; ++i) {
 		ping_done.wait(lock);
 		printf("pong\n");
 		pong_done.notify_one();
@@ -19,7 +19,7 @@ void bar() {
 
 void foo() {
 	std::unique_lock <std::mutex> lock(m);
-	for (size_t i = 0; i < 500000; ++i) {
+	for (size_t i = 0; i < n; ++i) {
 		printf("ping\n");
 		ping_done.notify_one();
 		pong_done.wait(lock);
