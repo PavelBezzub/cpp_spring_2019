@@ -1,5 +1,4 @@
 //long running code (13 seconds)
-#include "pch.h"
 #include <iostream>
 #include <thread>
 #include <mutex>
