@@ -42,12 +42,12 @@ void merge(std::string f1, std::string f2, std::string file_result)
 
 	inA.seekg(0, ios::end);
 	size_t size_a = inA.tellg() / sizeof(uint64_t);
-	//cout << " size_a = " << size_a << endl;
+//	cout << " size_a = " << size_a << endl;
 	inA.seekg(0, 0);
 
 	inB.seekg(0, ios::end);
 	size_t size_b = inB.tellg() / sizeof(uint64_t);
-	//cout <<" size_b = " <<size_b << endl;
+//	cout <<" size_b = " <<size_b << endl;
 	inB.seekg(0, 0);
 
 	inA.read((char*)&(a), sizeof(uint64_t));
@@ -133,7 +133,6 @@ void sort_file(const char* f1, std::string file_result, size_t number, size_t si
 		int num = i;
 		while (nn < i && !(num==1))
 		{
-			cin.get();
 			if (num % 2)
 			{
 				str1 = to_string(num-1) + to_string(n) + to_string(number);
@@ -150,7 +149,6 @@ void sort_file(const char* f1, std::string file_result, size_t number, size_t si
 			}
 			for (int u = 0; u < (num/2); u++)
 			{
-				cin.get();
 				str1 = to_string(2*u) + to_string(n) +to_string(number);
 				str2 = to_string(2*u + 1) + to_string(n) + to_string(number);
 				str3 = to_string(u) + to_string(n+1) + to_string(number);
