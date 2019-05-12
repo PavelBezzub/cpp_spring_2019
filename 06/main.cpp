@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include<random>
 using namespace std;
-const size_t Treads_numbers = 4;
-void sort_arr(const char* F_name, std::string file_result, size_t number,size_t size)
+const size_t Threads_numbers = 4;
+void sort_arr(const char* F_name,const std::string &file_result, size_t number,size_t size)
 {
 	std::vector<std::uint64_t> arr;
 	uint64_t z;
@@ -25,7 +25,7 @@ void sort_arr(const char* F_name, std::string file_result, size_t number,size_t 
 		for (size_t j = i; j > 0 && arr[j - 1] > arr[j]; j--) 
 			swap(arr[j - 1], arr[j]);
 	in.close();
-	ofstream out("C:\\Games\\"+ file_result, ios::binary);
+	ofstream out( file_result, ios::binary);//!
 	for (size_t i = 0; i < size; i++)
 	{
 		out.write((char*)&(arr[i]), sizeof(arr[i]));
@@ -33,12 +33,12 @@ void sort_arr(const char* F_name, std::string file_result, size_t number,size_t 
 	out.close();
 }
 
-void merge(std::string f1, std::string f2, std::string file_result)
+void merge(const std::string &f1,const std::string &f2,const std::string &file_result)
 {
 	uint64_t a;
 	uint64_t b;
-	ifstream inA("C:\\Games\\" + f1, ios::binary);
-	ifstream inB("C:\\Games\\" + f2, ios::binary);
+	ifstream inA(f1, ios::binary);//!
+	ifstream inB(f2, ios::binary);//!
 
 	inA.seekg(0, ios::end);
 	size_t size_a = inA.tellg() / sizeof(uint64_t);
@@ -54,7 +54,7 @@ void merge(std::string f1, std::string f2, std::string file_result)
 	inB.read((char*)&(b), sizeof(uint64_t));
 	size_t counter1 = 0;
 	size_t counter2 = 0;
-	ofstream out("C:\\Games\\" + file_result, ios::binary);
+	ofstream out(file_result, ios::binary);//!
 	for (int i = 0; i < size_a + size_b; ++i)
 	{
 		if (a > b)
@@ -86,15 +86,15 @@ void merge(std::string f1, std::string f2, std::string file_result)
 	inA.close();
 	inB.close();
 	out.close();
-	string str1 = "C:\\Games\\" + f1;
-	string str2 = "C:\\Games\\" + f2;
+	string str1 = f1;
+	string str2 = f2;
 	const char * A = str1.c_str();
 	const char * B = str2.c_str();
 	remove(A);
 	remove(B);
 }
 
-void sort_file(const char* f1, std::string file_result, size_t number, size_t size)
+void sort_file(const char* f1,const std::string &file_result, size_t number, size_t size)
 {
 	int cardinality = 100;
 	int amounnt = size / cardinality;
@@ -102,28 +102,30 @@ void sort_file(const char* f1, std::string file_result, size_t number, size_t si
 	int i = 0;
 	for (i= 0 ; i < amounnt; ++i)
 	{
-		str = to_string(i) + to_string(0)+ to_string(number);
-		sort_arr("C:\\Games\\MyArr.txt",str + "_file.txt", number + i* cardinality, cardinality);
+		str = to_string(i) +"0" + to_string(number);
+		sort_arr("MyArr.txt",str + "_file.txt", number + i* cardinality, cardinality);
 	}
 	if (size % cardinality)
 	{ 		
-		str = to_string(i)+ to_string(0)+ to_string(number);
-		sort_arr("C:\\Games\\MyArr.txt", str + "_file.txt", number + i * cardinality, size % cardinality);
+		str = to_string(i)+ "0" + to_string(number);
+		sort_arr("MyArr.txt", str + "_file.txt", number + i * cardinality, size % cardinality);
 		i++;
 	}
 	int am = 0;
 	if (i == 1)
 	{
-		string File3 = "C:\\Games\\" + str + "_file.txt";
+		string File3 =  str + "_file.txt";//!
 		const char * A = File3.c_str();
-		string str_file_res = "C:\\Games\\" + file_result + ".txt";
+		string str_file_res =  file_result + ".txt";//!
 		const char * B = str_file_res.c_str();
 		rename(A, B);
 	}
 	else if (i == 2 )
 	{
-		str1 = to_string(0)+to_string(0)+to_string(number);
-		str2= to_string(1) + to_string(0) +to_string(number);
+		//str1 = to_string(0)+to_string(0)+to_string(number);
+		str1 = "00"  + to_string(number);
+		//str2= to_string(1) + to_string(0) +to_string(number);
+		str2 = "10" + to_string(number);
 		merge(str1+"_file.txt",str2+ "_file.txt", file_result + ".txt");
 	}
 	else 
@@ -140,8 +142,8 @@ void sort_file(const char* f1, std::string file_result, size_t number, size_t si
 				str3 = to_string(num)+ to_string(num) + to_string(n)+  to_string(number);
 				uint64_t z;
 				merge(str1 + "_file.txt", str2 + "_file.txt", str3 + "A_file.txt");
-				string a = ("C:\\Games\\" + str3 + "A_file.txt");
-				string b = ("C:\\Games\\" + str2 + "_file.txt");
+				string a = (str3 + "A_file.txt");
+				string b = (str2 + "_file.txt");
 				const char * A = a.c_str();
 				const char * B = b.c_str();
 				rename(A,B);
@@ -160,16 +162,16 @@ void sort_file(const char* f1, std::string file_result, size_t number, size_t si
 			nn *= 2;
 		}
 		int result;
-		string File3 = "C:\\Games\\" + str3 + "_file.txt";
+		string File3 =  str3 + "_file.txt";//!
 		const char * A = File3.c_str();
-		string str_file_res = "C:\\Games\\" + file_result + ".txt";
+		string str_file_res =file_result + ".txt";//!
 		const char * B = str_file_res.c_str();
 		result = rename(A, B);
 	}
 }
 int main() {
-	const char* FName = "C:\\Games\\MyArr.txt"; 
-	const uint64_t n = 1000;
+	const char* FName = "MyArr.txt"; 
+	const uint64_t n = 10000;
 	uint64_t x;                                	
 	ofstream out(FName, ios::binary);            
 	for (auto i = 0; i < n; i++)
@@ -178,39 +180,59 @@ int main() {
 		x= rand()%100;
 		out.write((char*)&(x), sizeof(x));	
 	}     
-	out.close();   
-	uint64_t numbers = n/Treads_numbers;//50
+	out.close();
+	uint64_t numbers = n/Threads_numbers;//50
 	uint64_t pos;
 	size_t res_number = 0;
 	auto start = std::chrono::steady_clock::now();
 	std::string str;
 	std::vector<std::thread> results;
-	results.reserve(Treads_numbers);
-	for (size_t i = 0; i < Treads_numbers; i++) {
+	results.reserve(Threads_numbers);
+	for (size_t i = 0; i < Threads_numbers; i++) {
 		str = to_string(res_number);
-		pos = i * n / Treads_numbers;
-		if (i==(Treads_numbers-1))  { numbers = (n/Treads_numbers) + (n%Treads_numbers); }
-		results.emplace_back([str, pos, numbers]()->void{
-			return sort_file("C:\\Games\\MyArr.txt", "Result" + str, pos, numbers);
-		});
+		pos = i * n / Threads_numbers;
+		if (i==(Threads_numbers-1))  { numbers = (n/Threads_numbers) + (n%Threads_numbers); }
+		results.emplace_back(sort_file,"MyArr.txt", "Result" + str+'0', pos, numbers);
 		res_number++;
 	}
 	for (auto& f : results) {
 		f.join();
 	}
-	merge("Result0.txt", "Result1.txt", "Result01.txt");
-	merge("Result2.txt", "Result3.txt", "Result02.txt");
-	merge("Result01.txt", "Result02.txt", "Result.txt");
-	//merge("Result6.txt", "Result7.txt", "Result04.txt");
-	//merge("Result01.txt", "Result02.txt", "Result001.txt");
-	//merge("Result03.txt", "Result04.txt", "Result002.txt");
-	//merge("Result002.txt", "Result001.txt", "Result.txt");
+	int k = Threads_numbers;
+	uint64_t file_index = 0;
+	std::string str1, str2, s_res;
+	while (k != 1) {
+		int index = 1;
+		for (int num = 0; num < k; num += Threads_numbers * 2) {
+			std::vector <std::thread> threads;
+			for (int j = 0; j < Threads_numbers; j++) {
+				if (index - 1 < k / 2) {
+					str1 = "Result" + std::to_string(2 * index - 2) + std::to_string(file_index) + ".txt";
+					str2 = "Result" + std::to_string(2 * index - 1)  + std::to_string(file_index) + ".txt";
+					s_res = "Result" + std::to_string(index - 1) + std::to_string(file_index + 1) + ".txt";
+					std::thread th([str1, str2, s_res, index, file_index] {
+						return merge(str1, str2, s_res);
+					});
+					threads.emplace_back(std::move(th));
+					index = index + 1;
+				}
+			}
+			for (auto& t : threads) {
+				if (t.joinable()) {
+					t.join();
+				}
+			}
+		}
+		k /= 2;
+		file_index += 1;
+	}
+	rename(s_res.c_str(), "Result.txt");
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double> diff = end - start;
 	std::cout << diff.count() << std::endl;
 	cout << endl;
 	uint64_t z;
-	ifstream inA("C:\\Games\\Result.txt", ios::binary);
+	ifstream inA("Result.txt", ios::binary);
 	for (int i = 0; i <n ; ++i)
 	{
 		inA.read((char*)&(z), sizeof(uint64_t));
