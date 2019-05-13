@@ -171,9 +171,10 @@ void sort_file(const char* f1,const std::string &file_result, size_t number, siz
 }
 int main() {
 	const char* FName = "MyArr.txt"; 
-	const uint64_t n = 10000;
+	const uint64_t n = 125000;
 	uint64_t x;                                	
-	ofstream out(FName, ios::binary);            
+	ofstream out(FName, ios::binary);
+	if (!out.is_open()) { cout << " file not found"; return 1; }
 	for (auto i = 0; i < n; i++)
 	{
 	
@@ -218,9 +219,7 @@ int main() {
 				}
 			}
 			for (auto& t : threads) {
-				if (t.joinable()) {
 					t.join();
-				}
 			}
 		}
 		k /= 2;
@@ -236,7 +235,7 @@ int main() {
 	for (int i = 0; i <n ; ++i)
 	{
 		inA.read((char*)&(z), sizeof(uint64_t));
-		cout << " " << z;
+		//cout << " " << z;
 	}
 	inA.close();
 	cout << endl;
