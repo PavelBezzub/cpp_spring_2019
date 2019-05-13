@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include<random>
 using namespace std;
-const size_t Threads_numbers = 1;
+const size_t Threads_numbers = 2;
 void sort_arr(const char* F_name, const std::string &file_result, size_t number, size_t size)
 {
 	std::vector<std::uint64_t> arr;
