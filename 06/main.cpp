@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include<random>
 using namespace std;
-const size_t Threads_numbers = 4;
+const size_t Threads_numbers = 1;
 void sort_arr(const char* F_name, const std::string &file_result, size_t number, size_t size)
 {
 	std::vector<std::uint64_t> arr;
@@ -204,7 +204,6 @@ int main() {
 		f.join();
 	}
 	int k = Threads_numbers;
-	if (k==1){ rename(("Result" + str + '0').c_str(), "Result.txt"); }
 	uint64_t file_index = 0;
 	std::string str1, str2, s_res;
 	while (k != 1) {
@@ -230,7 +229,8 @@ int main() {
 		k /= 2;
 		file_index += 1;
 	}
-	rename(s_res.c_str(), "Result.txt");
+	if (Threads_numbers == 1) { rename("Result00.txt", "Result.txt"); }
+	else { rename(s_res.c_str(), "Result.txt"); }
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double> diff = end - start;
 	std::cout << diff.count() << std::endl;
