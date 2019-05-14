@@ -9,13 +9,14 @@
 #include <stdio.h>
 #include<random>
 using namespace std;
-const size_t Threads_numbers = 2;
-void sort_arr(const char* F_name, const std::string &file_result, size_t number, size_t size)
+const size_t Threads_numbers = 4;
+bool flag_ = 0;
+void sort_arr(const char* F_name, const std::string &file_result, size_t number, size_t size, bool flag)
 {
 	std::vector<std::uint64_t> arr;
 	uint64_t z;
 	ifstream in(F_name, ios::binary);
-	if (!in.is_open()) { cout << " file not found"; exit(0); }
+	if (!in.is_open()) { flag = 1; return; }
 	in.seekg(number * sizeof(uint64_t), 0);
 	for (size_t i = 0; i < size; ++i)
 	{
@@ -27,7 +28,7 @@ void sort_arr(const char* F_name, const std::string &file_result, size_t number,
 			swap(arr[j - 1], arr[j]);
 	in.close();
 	ofstream out(file_result, ios::binary);//!
-	if (!out.is_open()) { cout << " file not found"; exit(0); }
+	if (!out.is_open()) { flag = 1; return; }
 	for (size_t i = 0; i < size; i++)
 	{
 		out.write((char*)&(arr[i]), sizeof(arr[i]));
@@ -35,14 +36,14 @@ void sort_arr(const char* F_name, const std::string &file_result, size_t number,
 	out.close();
 }
 
-void merge(const std::string &f1, const std::string &f2, const std::string &file_result)
+void merge(const std::string &f1, const std::string &f2, const std::string &file_result, bool flag)
 {
 	uint64_t a;
 	uint64_t b;
 	ifstream inA(f1, ios::binary);//!
 	ifstream inB(f2, ios::binary);//!
-	if (!inA.is_open()) { cout << " file not found"; exit(0); }
-	if (!inB.is_open()) { cout << " file not found"; exit(0); }
+	if (!inA.is_open()) { flag = 1; return; }
+	if (!inB.is_open()) { flag = 1; return; }
 	inA.seekg(0, ios::end);
 	size_t size_a = inA.tellg() / sizeof(uint64_t);
 	//	cout << " size_a = " << size_a << endl;
@@ -58,7 +59,7 @@ void merge(const std::string &f1, const std::string &f2, const std::string &file
 	size_t counter1 = 0;
 	size_t counter2 = 0;
 	ofstream out(file_result, ios::binary);//!
-	if (!out.is_open()) { cout << " file not found"; exit(0); }
+	if (!out.is_open()) { flag = 1; return; }
 	for (int i = 0; i < size_a + size_b; ++i)
 	{
 		if (a > b)
@@ -100,6 +101,7 @@ void merge(const std::string &f1, const std::string &f2, const std::string &file
 
 void sort_file(const char* f1, const std::string &file_result, size_t number, size_t size)
 {
+	bool flag = 0;
 	int cardinality = 100;
 	int amounnt = size / cardinality;
 	string str, str1, str2, str3;
@@ -107,12 +109,14 @@ void sort_file(const char* f1, const std::string &file_result, size_t number, si
 	for (i = 0; i < amounnt; ++i)
 	{
 		str = to_string(i) + "0" + to_string(number);
-		sort_arr("MyArr.txt", str + "_file.txt", number + i * cardinality, cardinality);
+		sort_arr("MyArr.txt", str + "_file.txt", number + i * cardinality, cardinality, flag);
+		if (flag == 1) { flag_ = 1;  return; }
 	}
 	if (size % cardinality)
 	{
 		str = to_string(i) + "0" + to_string(number);
-		sort_arr("MyArr.txt", str + "_file.txt", number + i * cardinality, size % cardinality);
+		sort_arr("MyArr.txt", str + "_file.txt", number + i * cardinality, size % cardinality, flag);
+		if (flag == 1) { flag_ = 1;  return; }
 		i++;
 	}
 	int am = 0;
@@ -130,7 +134,8 @@ void sort_file(const char* f1, const std::string &file_result, size_t number, si
 		str1 = "00" + to_string(number);
 		//str2= to_string(1) + to_string(0) +to_string(number);
 		str2 = "10" + to_string(number);
-		merge(str1 + "_file.txt", str2 + "_file.txt", file_result + ".txt");
+		merge(str1 + "_file.txt", str2 + "_file.txt", file_result + ".txt", flag);
+		if (flag == 1) { flag_ = 1;  return; }
 	}
 	else
 	{
@@ -145,7 +150,8 @@ void sort_file(const char* f1, const std::string &file_result, size_t number, si
 				str2 = to_string(num - 2) + to_string(n) + to_string(number);
 				str3 = to_string(num) + to_string(num) + to_string(n) + to_string(number);
 				uint64_t z;
-				merge(str1 + "_file.txt", str2 + "_file.txt", str3 + "A_file.txt");
+				merge(str1 + "_file.txt", str2 + "_file.txt", str3 + "A_file.txt", flag);
+				if (flag == 1) { flag_ = 1;  return; }
 				string a = (str3 + "A_file.txt");
 				string b = (str2 + "_file.txt");
 				const char * A = a.c_str();
@@ -158,8 +164,8 @@ void sort_file(const char* f1, const std::string &file_result, size_t number, si
 				str1 = to_string(2 * u) + to_string(n) + to_string(number);
 				str2 = to_string(2 * u + 1) + to_string(n) + to_string(number);
 				str3 = to_string(u) + to_string(n + 1) + to_string(number);
-				merge(str1 + "_file.txt", str2 + "_file.txt", str3 + "_file.txt");
-
+				merge(str1 + "_file.txt", str2 + "_file.txt", str3 + "_file.txt", flag);
+				if (flag == 1) { flag_ = 1;  return; }
 			}
 			n++;
 			num /= 2;
@@ -175,7 +181,7 @@ void sort_file(const char* f1, const std::string &file_result, size_t number, si
 }
 int main() {
 	const char* FName = "MyArr.txt";
-	const uint64_t n = 100000;
+	const uint64_t n = 1000000;
 	uint64_t x;
 	ofstream out(FName, ios::binary);
 	if (!out.is_open()) { cout << " file not found"; return 1; }
@@ -203,6 +209,7 @@ int main() {
 	for (auto& f : results) {
 		f.join();
 	}
+	if (flag_ == 1) { cout << " error " << endl;  return 1; }
 	int k = Threads_numbers;
 	uint64_t file_index = 0;
 	std::string str1, str2, s_res;
@@ -216,7 +223,7 @@ int main() {
 					str2 = "Result" + std::to_string(2 * index - 1) + std::to_string(file_index) + ".txt";
 					s_res = "Result" + std::to_string(index - 1) + std::to_string(file_index + 1) + ".txt";
 					std::thread th([str1, str2, s_res, index, file_index] {
-						return merge(str1, str2, s_res);
+						return merge(str1, str2, s_res, flag_);
 					});
 					threads.emplace_back(std::move(th));
 					index = index + 1;
@@ -229,6 +236,7 @@ int main() {
 		k /= 2;
 		file_index += 1;
 	}
+	if (flag_ == 1) { cout << " error " << endl;  return 1; }
 	if (Threads_numbers == 1) { rename("Result00.txt", "Result.txt"); }
 	else { rename(s_res.c_str(), "Result.txt"); }
 	auto end = std::chrono::steady_clock::now();
@@ -237,7 +245,7 @@ int main() {
 	cout << endl;
 	uint64_t z;
 	ifstream inA("Result.txt", ios::binary);
-	if (!inA.is_open()) { cout << " file not found"; exit(0); }
+	if (!inA.is_open()) { cout << " file not found_";return 1; }
 	for (int i = 0; i < n; ++i)
 	{
 		inA.read((char*)&(z), sizeof(uint64_t));
