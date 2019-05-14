@@ -237,6 +237,7 @@ int main() {
 	cout << endl;
 	uint64_t z;
 	ifstream inA("Result.txt", ios::binary);
+	if (!inA.is_open()) { cout << " file not found"; exit(0); }
 	for (int i = 0; i < n; ++i)
 	{
 		inA.read((char*)&(z), sizeof(uint64_t));
