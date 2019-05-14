@@ -10,13 +10,13 @@
 #include<random>
 using namespace std;
 const size_t Threads_numbers = 4;
-bool flag_ = 0;
-void sort_arr(const char* F_name, const std::string &file_result, size_t number, size_t size, bool flag)
+bool flag_ = false;
+void sort_arr(const char* F_name, const std::string &file_result, size_t number, size_t size, bool& flag)
 {
 	std::vector<std::uint64_t> arr;
 	uint64_t z;
 	ifstream in(F_name, ios::binary);
-	if (!in.is_open()) { flag = 1; return; }
+	if (!in.is_open()) { flag = true; return; }
 	in.seekg(number * sizeof(uint64_t), 0);
 	for (size_t i = 0; i < size; ++i)
 	{
@@ -28,7 +28,7 @@ void sort_arr(const char* F_name, const std::string &file_result, size_t number,
 			swap(arr[j - 1], arr[j]);
 	in.close();
 	ofstream out(file_result, ios::binary);//!
-	if (!out.is_open()) { flag = 1; return; }
+	if (!out.is_open()) { flag = true; return; }
 	for (size_t i = 0; i < size; i++)
 	{
 		out.write((char*)&(arr[i]), sizeof(arr[i]));
@@ -36,14 +36,14 @@ void sort_arr(const char* F_name, const std::string &file_result, size_t number,
 	out.close();
 }
 
-void merge(const std::string &f1, const std::string &f2, const std::string &file_result, bool flag)
+void merge(const std::string &f1, const std::string &f2, const std::string &file_result, bool& flag)
 {
 	uint64_t a;
 	uint64_t b;
 	ifstream inA(f1, ios::binary);//!
 	ifstream inB(f2, ios::binary);//!
-	if (!inA.is_open()) { flag = 1; return; }
-	if (!inB.is_open()) { flag = 1; return; }
+	if (!inA.is_open()) { flag = true; return; }
+	if (!inB.is_open()) { flag = true; return; }
 	inA.seekg(0, ios::end);
 	size_t size_a = inA.tellg() / sizeof(uint64_t);
 	//	cout << " size_a = " << size_a << endl;
@@ -59,7 +59,7 @@ void merge(const std::string &f1, const std::string &f2, const std::string &file
 	size_t counter1 = 0;
 	size_t counter2 = 0;
 	ofstream out(file_result, ios::binary);//!
-	if (!out.is_open()) { flag = 1; return; }
+	if (!out.is_open()) { flag = true; return; }
 	for (int i = 0; i < size_a + size_b; ++i)
 	{
 		if (a > b)
@@ -101,7 +101,7 @@ void merge(const std::string &f1, const std::string &f2, const std::string &file
 
 void sort_file(const char* f1, const std::string &file_result, size_t number, size_t size)
 {
-	bool flag = 0;
+	bool flag = false;
 	int cardinality = 100;
 	int amounnt = size / cardinality;
 	string str, str1, str2, str3;
@@ -110,13 +110,13 @@ void sort_file(const char* f1, const std::string &file_result, size_t number, si
 	{
 		str = to_string(i) + "0" + to_string(number);
 		sort_arr("MyArr.txt", str + "_file.txt", number + i * cardinality, cardinality, flag);
-		if (flag == 1) { flag_ = 1;  return; }
+		if (flag ) { flag_ = true;  return; }
 	}
 	if (size % cardinality)
 	{
 		str = to_string(i) + "0" + to_string(number);
 		sort_arr("MyArr.txt", str + "_file.txt", number + i * cardinality, size % cardinality, flag);
-		if (flag == 1) { flag_ = 1;  return; }
+		if (flag ) { flag_ = true;  return; }
 		i++;
 	}
 	int am = 0;
@@ -135,7 +135,7 @@ void sort_file(const char* f1, const std::string &file_result, size_t number, si
 		//str2= to_string(1) + to_string(0) +to_string(number);
 		str2 = "10" + to_string(number);
 		merge(str1 + "_file.txt", str2 + "_file.txt", file_result + ".txt", flag);
-		if (flag == 1) { flag_ = 1;  return; }
+		if (flag ) { flag_ = true;  return; }
 	}
 	else
 	{
@@ -151,7 +151,7 @@ void sort_file(const char* f1, const std::string &file_result, size_t number, si
 				str3 = to_string(num) + to_string(num) + to_string(n) + to_string(number);
 				uint64_t z;
 				merge(str1 + "_file.txt", str2 + "_file.txt", str3 + "A_file.txt", flag);
-				if (flag == 1) { flag_ = 1;  return; }
+				if (flag ) { flag_ = true;  return; }
 				string a = (str3 + "A_file.txt");
 				string b = (str2 + "_file.txt");
 				const char * A = a.c_str();
@@ -165,7 +165,7 @@ void sort_file(const char* f1, const std::string &file_result, size_t number, si
 				str2 = to_string(2 * u + 1) + to_string(n) + to_string(number);
 				str3 = to_string(u) + to_string(n + 1) + to_string(number);
 				merge(str1 + "_file.txt", str2 + "_file.txt", str3 + "_file.txt", flag);
-				if (flag == 1) { flag_ = 1;  return; }
+				if (flag ) { flag_ = true;  return; }
 			}
 			n++;
 			num /= 2;
@@ -209,7 +209,7 @@ int main() {
 	for (auto& f : results) {
 		f.join();
 	}
-	if (flag_ == 1) { cout << " error " << endl;  return 1; }
+	if (flag_ ) { cout << " error " << endl;  return 1; }
 	int k = Threads_numbers;
 	uint64_t file_index = 0;
 	std::string str1, str2, s_res;
@@ -236,7 +236,8 @@ int main() {
 		k /= 2;
 		file_index += 1;
 	}
-	if (flag_ == 1) { cout << " error " << endl;  return 1; }
+	if (flag_ ) { cout << " error " << endl;  return 1; }
+	cout << " " <<flag_;
 	if (Threads_numbers == 1) { rename("Result00.txt", "Result.txt"); }
 	else { rename(s_res.c_str(), "Result.txt"); }
 	auto end = std::chrono::steady_clock::now();
